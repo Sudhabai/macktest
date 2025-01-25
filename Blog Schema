@@ -1,0 +1,51 @@
+const Blog = require('../models/Blog');
+
+const addBlog = async (req, res) => {
+    try {
+        const blog = new Blog(req.body);
+        await blog.save();
+        res.status(201).json(blog);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+    };
+const getAllBlogs = async (req, res) => {
+    try {
+        const blogs = await Blog.find().populate('author');
+        res.json(blogs);
+    }
+    catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+    };
+
+    const getBlogsByUserId = async (req, res) => {
+        try {
+            const blogs = await Blog.find({ author: req.params.userid });
+            res.json(blogs);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    };
+
+    const updateBlog = async (req, res) => {
+        try {
+            const blog = await Blog.findByIdUpdate(req.params.id, req.body, { new: true });
+            if (!blog) return res.status(404).json({ error: 'Blog not found' });
+            res.json(blog);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    };
+
+    const deleteBlog = async (req, res) => {
+        try{
+            const blog = await Blog.findByIdAndDelete(req.params.id);
+            if (!blog) return res.status(404).json({ error: 'Blog not found' });
+            res.json({ message: 'Blog deleted successfully' });
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
+    };
+    module.exports = { addBlog, grtAllBlogs, getBlogById, getBlogsByUserId,updateBlog, deleteBlog };
+    
